@@ -14,11 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from django.views.generic import TemplateView
+
 from allauth.account.views import confirm_email
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+
 
 urlpatterns = [
     path("", include("home.urls")),
@@ -30,11 +33,16 @@ urlpatterns = [
     # Override email confirm to use allauth's HTML view instead of rest_auth's API view
     path("rest-auth/registration/account-confirm-email/<str:key>/", confirm_email),
     path("rest-auth/registration/", include("rest_auth.registration.urls")),
+    # React views
+    path("", TemplateView.as_view(template_name="frontend/index.html")),
+    re_path(r"^(?:.*)/?$", TemplateView.as_view(template_name="frontend/index.html")),
 ]
+
 
 admin.site.site_header = "Django React"
 admin.site.site_title = "Django React Admin Portal"
 admin.site.index_title = "Django React Admin"
+
 
 # swagger
 schema_view = get_schema_view(
